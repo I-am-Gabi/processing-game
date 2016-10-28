@@ -2,18 +2,20 @@
  * Implementaçao feita cumprindo os requisitos do Projeto Final.
  * DISCIPLINA: Lógica de Programação – Turma 01 – 2016.2
  * PROFESSOR : Orivaldo V. de Santana Jr.
- * ETAPAS    : 1, 2, 3, 4, 5.
+ * ETAPAS    : 1, 2, 3, 4, 5, 6.
  *
  * OBS:  
  * 1) As coordenadas da tela consideram o canto superior 
  * esquerdo como o ponto (0,0), e a unidade de tudo isso é pixels.
  * 2) Definimos 'd' como sendo o movimento 'FRENTE' (sentido direita) e 'a' como 'TRAS' (sentido esquerda).
  * 3) O sentido 'direita' é representado com valor 1, e o sentido 'esquerda' com -1.
- * 3) Substituimos o objeto elipse por uma imagem. 
+ * 4) Substituimos o objeto elipse por uma imagem. 
+ * 5) Quando o player morrer (player.vida <= 0) o jogo é fechado
 */
 
 // global var
 Player player;
+Game game;
 Obstacle[] obstaculos; 
 
 float esquerda;
@@ -21,48 +23,61 @@ float direita;
 float up;
 float down;
 
-// metade de um pixel por frame gravity.
-float gravidade = .5;
-// coordenada Y do chao para colisao
-float ground = 450;
-// diment
-int h = 500, w = 800;  
-
 //********* variaveis de posiçao   
-int p1_x = w/2, p1_y = 0, p2_x = w/2, p2_y = h;
+int p1_x = 0, p1_y = height/2, p2_x = 800, p2_y = height/2;
 
 /* setup(): é rodada uma vez só, e é usada pra declarações 
  * iniciais como tamanho da tela, fundo, frameRate, etc.
  */
 void setup() 
 {
+  game = new Game(.5, 450, 500, 800);
+  
   // setando informaçoes do player
   player = new Player();
-  player.posicao = new PVector(50, ground); 
+  player.posicao = new PVector(50, game.ground); 
   player.velocidade = new PVector(0, 0);
-  player.velocidadeSalto = 10;
+  player.velocidadeSalto = 10; //<>//
   player.velocidadeMovimento = 4; 
-  player.icon = loadImage("ball-icon.png");
-  player.vida = 10;
+  player.icon = loadImage("images/ball-icon.png");
+  player.vida = 20;
   
   
   Obstacle o1 = new Obstacle();
-  o1.icon = loadImage("stone-icon.png");
-  o1.posicao = new PVector(750, ground - 10);
-  o1.velocidade = 2;
+  o1.icon = loadImage("images/bullet-icon-yellow.png");
+  o1.posicao = new PVector(750, game.ground - 10);
+  o1.velocidade = 10;
   o1.flagToShow = true;
   o1.tempToShow = 5;
   o1.contTemp = 0;  
   
-  obstaculos = new Obstacle[1];
+  Obstacle o2 = new Obstacle();
+  o2.icon = loadImage("images/stone-icon.png");
+  o2.posicao = new PVector(750, game.ground - 5);
+  o2.velocidade = 5;
+  o2.flagToShow = true;
+  o2.tempToShow = 5;
+  o2.contTemp = 0;  
+  
+  Obstacle o3 = new Obstacle();
+  o3.icon = loadImage("images/bullet-icon-yellow.png");
+  o3.posicao = new PVector(750, game.ground - 5);
+  o3.velocidade = 15;
+  o3.flagToShow = true;
+  o3.tempToShow = 10;
+  o3.contTemp = 0; 
+  
+  obstaculos = new Obstacle[3];
   obstaculos[0] = o1; 
+  obstaculos[1] = o2;
+  obstaculos[2] = o3;
   
   // função size() é o que define o tamanho da janela
   size(800, 500);
   
   // função background() é o que define a cor do fundo
-  background(170);
-  frameRate(25);
+  background(220);
+  frameRate(25); 
 }
 
 /** keyPressed(): detecta tecla pressionada
@@ -72,10 +87,13 @@ void setup()
 void keyPressed()
 {
   if (key == 'd') {
+    System.out.println("d");
     direita = 1; 
   } else if (key == 'a') {
+    System.out.println("a");
     esquerda = -1; 
   } else if (key == ' ') {
+    System.out.println("space");
     up = -1;
   } 
 }
@@ -92,13 +110,16 @@ void keyReleased()
 }
 
  
-void draw_obstacle() {    
+void draw_obstacle() {     
   for (int i = 0; i < obstaculos.length; i++) {
     Obstacle o = obstaculos[i];
     
     if (checkCollision(o)) { 
-      player.vida--; 
-      text("Vida: " + player.vida, 10, 30);
+      player.vida--;  
+    }
+    
+    if (player.vida <= 0) {
+      exit(); 
     }
     
     if (o.contTemp == o.tempToShow) {
@@ -134,14 +155,14 @@ void draw_line() {
 void draw_player() {
   // Se o player estiver sobre o chao (player.posicao.y < ground), a gravidade é aplicada nele.
   // Note que usei < aqui porque subindo o valor y diminui ja que a posicao (0,0) é o topo esquedo da tela.
-  if (player.posicao.y < ground) 
-    player.velocidade.y += gravidade;
+  if (player.posicao.y < game.ground) 
+    player.velocidade.y += game.gravidade;
   else
     player.velocidade.y = 0; 
   
   // si o player estiver no chao e clicar para pular
   // a velocidade Y do player vai ser diminuida da velocidade do salto 
-  if (player.posicao.y >= ground && up != 0) 
+  if (player.posicao.y >= game.ground && up != 0) 
     player.velocidade.y = -player.velocidadeSalto;
   
   // regular o valor da velocidade.x considerando a desvios a esquerda e a direita
@@ -181,11 +202,6 @@ void draw()
   noFill();
   // reseto o background para nao deixar rastro de círculos a cada quadro processado
   background(100);
-  
-  textSize(32);
-  text("Vida: " + player.vida, 10, 30);
-  fill(255, 255, 255);
-   
   
   draw_player();
   draw_obstacle();
