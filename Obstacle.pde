@@ -5,4 +5,5 @@ class Obstacle {
   boolean flagToShow;
   int tempToShow;
   int contTemp;
+  boolean murderous;
 }

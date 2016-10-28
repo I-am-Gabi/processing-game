@@ -45,32 +45,45 @@ void setup()
   
   Obstacle o1 = new Obstacle();
   o1.icon = loadImage("images/bullet-icon-yellow.png");
-  o1.posicao = new PVector(750, game.ground - 10);
+  o1.posicao = new PVector(750 + (int)random(790), game.ground - 10);
   o1.velocidade = 10;
   o1.flagToShow = true;
   o1.tempToShow = 1 + (int)random(5);
   o1.contTemp = 0;  
+  o1.murderous = true;
   
   Obstacle o2 = new Obstacle();
   o2.icon = loadImage("images/stone-icon.png");
-  o2.posicao = new PVector(750, game.ground - 5);
+  o2.posicao = new PVector(750 + (int)random(790), game.ground - 5);
   o2.velocidade = 5;
   o2.flagToShow = true;
   o2.tempToShow = 1 + (int)random(5);
   o2.contTemp = 0;  
+  o2.murderous = true;
   
   Obstacle o3 = new Obstacle();
   o3.icon = loadImage("images/bullet-icon-yellow.png");
-  o3.posicao = new PVector(750, game.ground - 5);
+  o3.posicao = new PVector(750 + (int)random(790), game.ground - 5);
   o3.velocidade = 15;
   o3.flagToShow = true;
   o3.tempToShow = 1 + (int)random(5);
   o3.contTemp = 0; 
+  o3.murderous = true; 
   
-  obstaculos = new Obstacle[3];
+  Obstacle o4 = new Obstacle();
+  o4.icon = loadImage("images/tree-icon.png");
+  o4.posicao = new PVector(750 + (int)random(790), game.ground - 160);
+  o4.velocidade = 5;
+  o4.flagToShow = true;
+  o4.tempToShow = 1 + (int)random(5);
+  o4.contTemp = 0; 
+  o4.murderous = false;
+  
+  obstaculos = new Obstacle[4];
   obstaculos[0] = o1; 
   obstaculos[1] = o2;
   obstaculos[2] = o3;
+  obstaculos[3] = o4;
   
   // função size() é o que define o tamanho da janela
   size(800, 500);
@@ -114,7 +127,7 @@ void draw_obstacle() {
   for (int i = 0; i < obstaculos.length; i++) {
     Obstacle o = obstaculos[i];
     
-    if (checkCollision(o)) { 
+    if (o.murderous && checkCollision(o)) { 
       player.vida--;  
     }
     
