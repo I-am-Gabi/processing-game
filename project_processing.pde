@@ -48,7 +48,7 @@ void setup()
   o1.posicao = new PVector(750, game.ground - 10);
   o1.velocidade = 10;
   o1.flagToShow = true;
-  o1.tempToShow = 5;
+  o1.tempToShow = 1 + (int)random(5);
   o1.contTemp = 0;  
   
   Obstacle o2 = new Obstacle();
@@ -56,7 +56,7 @@ void setup()
   o2.posicao = new PVector(750, game.ground - 5);
   o2.velocidade = 5;
   o2.flagToShow = true;
-  o2.tempToShow = 5;
+  o2.tempToShow = 1 + (int)random(5);
   o2.contTemp = 0;  
   
   Obstacle o3 = new Obstacle();
@@ -64,7 +64,7 @@ void setup()
   o3.posicao = new PVector(750, game.ground - 5);
   o3.velocidade = 15;
   o3.flagToShow = true;
-  o3.tempToShow = 10;
+  o3.tempToShow = 1 + (int)random(5);
   o3.contTemp = 0; 
   
   obstaculos = new Obstacle[3];
